@@ -1,10 +1,12 @@
 "use client";
 
 import signUpValidate from "@/lib/validations/signUpValidate";
+import axios from "axios";
 import { Form, Field, Formik, ErrorMessage } from "formik";
 import Link from "next/link";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function SignInPage() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -21,9 +23,24 @@ export default function SignInPage() {
     phoneNumber: "",
     checkbox: false,
   };
+  // Sign up data saving logic
+  const handleData = async (data) => {
+    // console.log("Form_Data : ", data);
 
-  const handelData = async (data) => {
-    console.log("Form_Data : ", data);
+    try {
+      const response = await axios.post("/api/user/signup", data);
+
+      if (response.status === 201) {
+        console.log("Response:", response.data);
+        toast(response.data.message);
+        toast.success("Verification Email Sent", { delay: 2000 });
+      } else {
+        toast.error("Unexpected response from the server.");
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      toast.error(error.response.data.message);
+    }
   };
 
   return (
@@ -34,13 +51,12 @@ export default function SignInPage() {
           Join us today and unlock exclusive features.
         </p>
       </div>
-
+      <ToastContainer pauseOnFocusLoss={false} closeOnClick={true} />
       <div className="w-full lg:w-2/3 flex justify-center items-center p-4  ">
         <Formik
           initialValues={initialValues}
           validationSchema={signUpValidate}
           onSubmit={(values, { resetForm }) => {
-            
             const userData = {
               firstName: values.firstName,
               lastName: values.lastName,
@@ -48,8 +64,8 @@ export default function SignInPage() {
               password: values.password,
               phoneNumber: values.phoneNumber,
             };
-            handelData(userData);
-             // resetForm(); // Optionally reset form after submission
+            handleData(userData);
+            // resetForm(); // Optionally reset form after submission
           }}
         >
           {({ values }) => (
@@ -58,7 +74,6 @@ export default function SignInPage() {
                 Create A New Account
               </h1>
               {/* will add avatar implementation */}
-
               <div className="flex gap-5 justify-around">
                 <div className="mb-4">
                   <label htmlFor="firstName" className="block font-medium">
@@ -96,7 +111,6 @@ export default function SignInPage() {
                   />
                 </div>
               </div>
-
               <div className="mb-4">
                 <label htmlFor="email" className="block font-medium">
                   Email
@@ -114,7 +128,6 @@ export default function SignInPage() {
                   className="text-red-500 text-sm mt-1"
                 />
               </div>
-
               <div className="mb-4">
                 <label htmlFor="phoneNumber" className="block font-medium">
                   Phone Number
@@ -136,7 +149,6 @@ export default function SignInPage() {
                   className="text-red-500 text-sm mt-1"
                 />
               </div>
-
               <div className="mb-4">
                 <label htmlFor="password" className="block font-medium">
                   Password
@@ -164,8 +176,7 @@ export default function SignInPage() {
                   className="text-red-500 text-sm mt-1"
                 />
               </div>
-
-              <div className="mb-4 flex items-center">
+              <div className=" flex items-center">
                 <Field
                   type="checkbox"
                   name="checkbox"
@@ -176,20 +187,25 @@ export default function SignInPage() {
                   I agree to the terms and conditions.
                 </label>
               </div>
-
+              <ErrorMessage
+                name="checkbox"
+                component="div"
+                className="text-red-500 text-sm "
+              />
               <button
                 type="submit"
-                className="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className=" mt-4 w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
                 Sign Up
               </button>
 
+              {/*///////////  */}
               <p className="mt-4 text-center text-sm">
                 Already have an account?{" "}
                 <Link
                   href="/login"
                   className="text-teal-500 hover:underline transform hover:scale-125 transition-transform duration-100 p-1 ease-in-out"
-                  >
+                >
                   Log In
                 </Link>
               </p>
