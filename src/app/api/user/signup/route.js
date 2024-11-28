@@ -38,13 +38,13 @@ export async function POST(req) {
 
       await newUser.save();
 
-      await sendMail({ email, emailType:"VERIFY", userId:newUser._id }); 
+      await sendMail({ email, emailType: "VERIFY", userId: newUser._id });
 
       return NextResponse.json(
         {
           success: true,
           message: "User registered successfully",
-          // user: newUser, 
+          // user: newUser,
           // verifyCode,
           // expiryDate,
         },

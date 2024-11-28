@@ -27,18 +27,21 @@ export async function POST(req) {
     if (!user) {
       return NextResponse.json(
         { success: false, message: "User with this email not found" },
-        { status: 400 }
+        { status: 404 }
       );
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch && !user.isVerified) {
-      return NextResponse.json({
-        success: false,
-        status: "User Not Verified",
-        message: "Please check email and verify your account.",
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Please verify your email before logging in.",
+           
+        },
+        { status: 403 }
+      );
     }
 
     if (isMatch) {
@@ -52,8 +55,8 @@ export async function POST(req) {
       });
 
       const response = NextResponse.json({
-        message: `${user.firstName} Log in successfullly`,
         success: true,
+        message: `${user.firstName} Log in successfullly`,
       });
 
       response.cookies.set("token", token, {
@@ -62,10 +65,13 @@ export async function POST(req) {
 
       return response;
     } else {
-      return NextResponse.json({
-        success: false,
-        message: "Incorrect password",
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Incorrect password",
+        },
+        { status: 401 }
+      );
     }
   } catch (error) {
     console.error("Error:", error);

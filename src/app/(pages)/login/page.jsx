@@ -6,20 +6,46 @@ import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import loginValidate from "@/lib/validations/logInValidate";
 import { Button } from "@/components/ui/moving-border";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 function LogInPage() {
-  const [detail, setDetail] = useState("");
-  const [forgot, setForgot] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const handelData = async (data) => {
-    console.log("Form Data: ", data);
-  };
+  // Log IN Logic
+  const handleData = async (data) => {
+    if (!data.email || !data.password) {
+      toast.error("Email and password are required!");
+      return;
+    }
 
+    try {
+      const response = await axios.post("/api/user/login", data);
+      console.log("response", response);
+
+      if (response.data.success) {
+        toast.success(response.data.message || "Login Successful!");
+
+        setTimeout(() => {
+          router.push("/");
+        }, 1000);
+      } else {
+        toast.error(response.data.message || "Unexpected server response.");
+      }
+    } catch (error) {
+      // console.error("Login Error:", error);
+      toast.error(
+        error.response?.data?.message || "An error occurred during login."
+      );
+    }
+  };
   const initialValues = {
     email: "",
     password: "",
@@ -27,6 +53,7 @@ function LogInPage() {
 
   return (
     <div className="flex flex-col items-center justify-center lg:p-12 *:lg:flex-row min-h-screen   overflow-hidden w-full dark:bg-black bg-white dark:bg-grid-small-white/[0.2] bg-grid-small-black/[0.2] relative   p-10">
+      <ToastContainer closeOnClick={true} pauseOnFocusLoss={false} />
       <Formik
         initialValues={initialValues}
         validationSchema={loginValidate}
@@ -35,7 +62,7 @@ function LogInPage() {
             email: values.email,
             password: values.password,
           };
-          handelData(userData);
+          handleData(userData);
           // resetForm();
         }}
       >
@@ -44,7 +71,7 @@ function LogInPage() {
 
           return (
             <Form
-              className="bg-white shadow-2xl rounded-lg p-8 w-full sm:w-[400px] max-w-md space-y-6"
+              className="bg-white border-2 shadow-2xl rounded-lg p-8 w-full sm:w-[400px] max-w-md space-y-6"
               onSubmit={handleSubmit}
             >
               <h1 className="text-2xl font-semibold text-teal-600 text-center">
@@ -103,7 +130,7 @@ function LogInPage() {
                   className="text-red-500 text-sm mt-1"
                 />
               </div>
-
+              {/* <p className="text-red-500 text-sm mt-1"> {detail}</p> */}
               {/* Submit Button */}
               <div className="mt-4 m-auto   flex justify-center">
                 <Button
@@ -119,9 +146,8 @@ function LogInPage() {
               {/* Forgot Password Link */}
               <div>
                 <p className="hover:text-red-700 text-sm text-gray-500 hover:underline mt-1 text-right">
-                  <Link href={`/forgot/${values.email}`}>Forgot Password</Link>
+                  <Link href={`/forgot_password`}>Forgot Password</Link>
                 </p>
-                <p className="text-red-700 text-sm">{detail}</p>
               </div>
 
               {/* Registration Link */}
@@ -130,7 +156,7 @@ function LogInPage() {
                   Don't have an account?
                   <Link
                     href="/signup"
-                    className="text-teal-600 hover:underline"
+                    className="text-teal-600 hover:underline p-2"
                   >
                     Register here
                   </Link>
