@@ -1,7 +1,16 @@
+ 
+import { CardHoverEffectDemo } from "@/components/DisplayCard";
+
+import Footer from "@/components/Footer";
+
 export default function Home() {
   return (
-    <>
-      <h2>Hello world</h2>
-    </>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow m-auto">
+        {/* <CarouselComponent /> */}
+        <CardHoverEffectDemo />
+      </main>
+      <Footer />
+    </div>
   );
 }
