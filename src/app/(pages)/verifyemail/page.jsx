@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -18,12 +18,12 @@ function VerifyEmailPage() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [sending, setSending] = useState(false);  
+  const [sending, setSending] = useState(false);
 
   const emailRegex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-  const verifyUserEmail = async () => {
+  const verifyUserEmail = useCallback(async () => {
     setLoading(true);
     try {
       await axios.post("/api/user/verifyemail", { token });
@@ -36,7 +36,7 @@ function VerifyEmailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]); // Memoize the function based on token
 
   const sendVerification = async () => {
     if (!emailRegex.test(email)) {
@@ -64,7 +64,7 @@ function VerifyEmailPage() {
 
   useEffect(() => {
     if (token) verifyUserEmail();
-  }, [token]);
+  }, [token, verifyUserEmail]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8">

@@ -18,6 +18,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 export const Header = () => {
   const [user, setUser] = useState(null);
@@ -41,10 +42,12 @@ export const Header = () => {
       {/* Logo */}
       <div className=" flex items-center justify-start ">
         <Link href="/">
-          <img
+          <Image
             className="rounded-full w-12 h-12 sm:w-16 sm:h-16"
             src="https://www.shutterstock.com/image-vector/electronic-commerce-logo-template-260nw-611143775.jpg"
             alt="Logo"
+            width={64}
+            height={64}
           />
         </Link>
       </div>
@@ -66,7 +69,6 @@ export const Header = () => {
 
       {/* User & Cart */}
       <div className="  flex items-center justify-end w-fit   space-x-4 ">
-     
         {user && (
           <Link
             href="/"

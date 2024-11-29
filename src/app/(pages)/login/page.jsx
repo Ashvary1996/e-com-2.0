@@ -153,7 +153,7 @@ function LogInPage() {
               {/* Registration Link */}
               <div className="mt-4 text-center">
                 <p className="text-sm text-gray-600">
-                  Don't have an account?
+                  Dont&apos;s have an account?
                   <Link
                     href="/signup"
                     className="text-teal-600 hover:underline p-2"
